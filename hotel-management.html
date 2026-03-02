@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CGR Manjeera Hotel - Management Dashboard</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a4d6d;
+            --primary-light: #2d6a8f;
+            --accent: #8aa29e;
+            --accent-light: #b8cdc9;
+            --success: #6b9080;
+            --danger: #c17767;
+            --warning: #d4a373;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-light: #9ca3af;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f8fafb 0%, #eef2f5 100%);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(42, 109, 141, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(138, 162, 158, 0.05) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #root {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Navigation */
+        .navbar {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(31, 41, 55, 0.08);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-brand:hover {
+            color: var(--primary-light);
+            transform: scale(1.02);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem 0;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.02em;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            border-bottom-color: var(--accent-light);
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 2px;
+            background: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem 3rem;
+            animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.03em;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .contact-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            animation-fill-mode: both;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--glass-border);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--success);
+            margin-top: 0.5rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.08);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            letter-spacing: 0.02em;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+            background: rgba(138, 162, 158, 0.05);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Table */
+        .table-container {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: rgba(26, 77, 109, 0.05);
+        }
+
+        th {
+            text-align: left;
+            padding: 1.25rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.08);
+        }
+
+        td {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid rgba(31, 41, 55, 0.05);
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        tbody tr {
+            transition: all 0.3s ease;
+            animation: slideInRow 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            animation-fill-mode: both;
+        }
+
+        @keyframes slideInRow {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        tbody tr:hover {
+            background: rgba(138, 162, 158, 0.08);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.35rem 0.85rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        .status-available {
+            background: rgba(107, 144, 128, 0.15);
+            color: var(--success);
+        }
+
+        .status-booked {
+            background: rgba(193, 119, 103, 0.15);
+            color: var(--danger);
+        }
+
+        .status-active {
+            background: rgba(42, 109, 141, 0.15);
+            color: var(--primary);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.75rem 1.75rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            letter-spacing: 0.02em;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(26, 77, 109, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 77, 109, 0.3);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 144, 128, 0.2);
+        }
+
+        .btn-success:hover {
+            background: #5a7a6b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 144, 128, 0.3);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+            box-shadow: 0 4px 12px rgba(193, 119, 103, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: #b36656;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(193, 119, 103, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(138, 162, 158, 0.15);
+            color: var(--text-primary);
+            border: 1px solid rgba(138, 162, 158, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(138, 162, 158, 0.25);
+            border-color: var(--accent);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 1rem;
+            animation: fadeInOverlay 0.3s ease;
+        }
+
+        @keyframes fadeInOverlay {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideInModal 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideInModal {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 1.75rem;
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(193, 119, 103, 0.1);
+            color: var(--danger);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            letter-spacing: 0.02em;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 0.875rem 1.125rem;
+            border: 1px solid rgba(31, 41, 55, 0.15);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(138, 162, 158, 0.1);
+            background: white;
+        }
+
+        .form-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        /* Error & Success Messages */
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            animation: slideInDown 0.4s ease;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: rgba(107, 144, 128, 0.15);
+            color: var(--success);
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: rgba(193, 119, 103, 0.15);
+            color: var(--danger);
+            border-left: 4px solid var(--danger);
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 1rem;
+                border-top: 1px solid rgba(31, 41, 55, 0.08);
+                gap: 0;
+            }
+
+            .nav-links.active {
+                display: flex;
+            }
+
+            .nav-link {
+                padding: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            table {
+                min-width: 600px;
+            }
+
+            .modal {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Checkout Discount Input */
+        .checkout-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .discount-input {
+            width: 120px;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid rgba(31, 41, 55, 0.15);
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .tax-details {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 0.25rem;
+        }
+
+        /* Action buttons in table */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // API Base URL - Update this to your backend URL
+        const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+            ? 'http://localhost:8080/api'
+            : 'https://your-backend-url.com/api';
+
+        // Main App Component
+        function App() {
+            const [currentPage, setCurrentPage] = useState('home');
+            const [menuOpen, setMenuOpen] = useState(false);
+
+            return (
+                <div>
+                    <Navbar 
+                        currentPage={currentPage} 
+                        setCurrentPage={setCurrentPage}
+                        menuOpen={menuOpen}
+                        setMenuOpen={setMenuOpen}
+                    />
+                    {currentPage === 'home' && <HomePage />}
+                    {currentPage === 'rooms' && <RoomsPage />}
+                    {currentPage === 'bookings' && <BookingsPage />}
+                    {currentPage === 'admin' && <AdminPage />}
+                </div>
+            );
+        }
+
+        // Navbar Component
+        function Navbar({ currentPage, setCurrentPage, menuOpen, setMenuOpen }) {
+            return (
+                <nav className="navbar">
+                    <div className="nav-container">
+                        <div className="nav-brand" onClick={() => setCurrentPage('home')}>
+                            CGR Manjeera
+                        </div>
+                        <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
+                            <div 
+                                className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}
+                                onClick={() => { setCurrentPage('home'); setMenuOpen(false); }}
+                            >
+                                Home
+                            </div>
+                            <div 
+                                className={`nav-link ${currentPage === 'rooms' ? 'active' : ''}`}
+                                onClick={() => { setCurrentPage('rooms'); setMenuOpen(false); }}
+                            >
+                                Rooms
+                            </div>
+                            <div 
+                                className={`nav-link ${currentPage === 'bookings' ? 'active' : ''}`}
+                                onClick={() => { setCurrentPage('bookings'); setMenuOpen(false); }}
+                            >
+                                Bookings
+                            </div>
+                            <div 
+                                className={`nav-link ${currentPage === 'admin' ? 'active' : ''}`}
+                                onClick={() => { setCurrentPage('admin'); setMenuOpen(false); }}
+                            >
+                                Admin
+                            </div>
+                        </div>
+                        <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                </nav>
+            );
+        }
+
+        // Home Page Component
+        function HomePage() {
+            const [stats, setStats] = useState({
+                totalRooms: 0,
+                availableRooms: 0,
+                bookedRooms: 0,
+                totalRevenue: 0
+            });
+
+            useEffect(() => {
+                fetchStats();
+            }, []);
+
+            const fetchStats = async () => {
+                try {
+                    const [roomsRes, availableRes, bookedRes, bookingsRes] = await Promise.all([
+                        fetch(`${API_BASE}/rooms`),
+                        fetch(`${API_BASE}/rooms/available`),
+                        fetch(`${API_BASE}/rooms/booked`),
+                        fetch(`${API_BASE}/bookings`)
+                    ]);
+
+                    const rooms = await roomsRes.json();
+                    const available = await availableRes.json();
+                    const booked = await bookedRes.json();
+                    const bookings = await bookingsRes.json();
+
+                    const revenue = bookings.reduce((sum, b) => sum + (b.finalAmount || 0), 0);
+
+                    setStats({
+                        totalRooms: rooms.length,
+                        availableRooms: available.length,
+                        bookedRooms: booked.length,
+                        totalRevenue: revenue
+                    });
+                } catch (error) {
+                    console.error('Error fetching stats:', error);
+                }
+            };
+
+            return (
+                <div>
+                    <div className="hero">
+                        <h1>CGR Manjeera Hotel</h1>
+                        <p className="hero-subtitle">Luxury Hospitality Management System</p>
+                        <div className="contact-info">
+                            <div className="contact-item">
+                                <span>📧</span>
+                                <span>contact@cgrmanjeera.com</span>
+                            </div>
+                            <div className="contact-item">
+                                <span>📞</span>
+                                <span>+91 9876543210</span>
+                            </div>
+                            <div className="contact-item">
+                                <span>📍</span>
+                                <span>Hyderabad, Telangana, India</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="container">
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <div className="stat-label">Total Rooms</div>
+                                <div className="stat-value">{stats.totalRooms}</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Available</div>
+                                <div className="stat-value">{stats.availableRooms}</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Booked</div>
+                                <div className="stat-value">{stats.bookedRooms}</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Total Revenue</div>
+                                <div className="stat-value">₹{stats.totalRevenue.toLocaleString()}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Rooms Page Component
+        function RoomsPage() {
+            const [rooms, setRooms] = useState([]);
+            const [filter, setFilter] = useState('all');
+            const [showModal, setShowModal] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState(null);
+
+            useEffect(() => {
+                fetchRooms();
+            }, [filter]);
+
+            const fetchRooms = async () => {
+                setLoading(true);
+                try {
+                    let url = `${API_BASE}/rooms`;
+                    if (filter === 'available') url = `${API_BASE}/rooms/available`;
+                    if (filter === 'booked') url = `${API_BASE}/rooms/booked`;
+
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    setRooms(data);
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Failed to fetch rooms' });
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const deleteRoom = async (roomNumber) => {
+                if (!confirm(`Delete room ${roomNumber}?`)) return;
+
+                try {
+                    const response = await fetch(`${API_BASE}/rooms/${roomNumber}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        setMessage({ type: 'success', text: 'Room deleted successfully' });
+                        fetchRooms();
+                    } else {
+                        setMessage({ type: 'error', text: 'Failed to delete room' });
+                    }
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Error deleting room' });
+                }
+            };
+
+            return (
+                <div className="container">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '2.5rem' }}>Room Management</h2>
+                        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+                            + Add Room
+                        </button>
+                    </div>
+
+                    {message && (
+                        <div className={`alert alert-${message.type}`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${filter === 'all' ? 'active' : ''}`}
+                            onClick={() => setFilter('all')}
+                        >
+                            All Rooms
+                        </div>
+                        <div 
+                            className={`tab ${filter === 'available' ? 'active' : ''}`}
+                            onClick={() => setFilter('available')}
+                        >
+                            Available
+                        </div>
+                        <div 
+                            className={`tab ${filter === 'booked' ? 'active' : ''}`}
+                            onClick={() => setFilter('booked')}
+                        >
+                            Booked
+                        </div>
+                    </div>
+
+                    <div className="table-container">
+                        {loading ? (
+                            <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                <div className="loading"></div>
+                            </div>
+                        ) : rooms.length === 0 ? (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">🏨</div>
+                                <div className="empty-state-text">No rooms found</div>
+                            </div>
+                        ) : (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Room Number</th>
+                                        <th>Room Type</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {rooms.map((room, index) => (
+                                        <tr key={room.roomNumber} style={{ animationDelay: `${index * 0.05}s` }}>
+                                            <td><strong>{room.roomNumber}</strong></td>
+                                            <td>{room.roomType}</td>
+                                            <td>
+                                                <span className={`status-badge ${room.booked ? 'status-booked' : 'status-available'}`}>
+                                                    {room.booked ? 'Booked' : 'Available'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <button 
+                                                    className="btn btn-danger btn-sm"
+                                                    onClick={() => deleteRoom(room.roomNumber)}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    {showModal && (
+                        <AddRoomModal 
+                            onClose={() => setShowModal(false)}
+                            onSuccess={() => {
+                                setShowModal(false);
+                                fetchRooms();
+                                setMessage({ type: 'success', text: 'Room added successfully' });
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Add Room Modal
+        function AddRoomModal({ onClose, onSuccess }) {
+            const [formData, setFormData] = useState({
+                roomNumber: '',
+                roomType: ''
+            });
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`${API_BASE}/rooms`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        onSuccess();
+                    } else {
+                        const errorText = await response.text();
+                        setError(errorText || 'Failed to add room');
+                    }
+                } catch (err) {
+                    setError('Error adding room');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Add New Room</h3>
+                            <button className="modal-close" onClick={onClose}>×</button>
+                        </div>
+
+                        {error && <div className="alert alert-error">{error}</div>}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="form-label">Room Number</label>
+                                <input 
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.roomNumber}
+                                    onChange={(e) => setFormData({...formData, roomNumber: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Room Type</label>
+                                <input 
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.roomType}
+                                    onChange={(e) => setFormData({...formData, roomType: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? <span className="loading"></span> : 'Add Room'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Bookings Page Component
+        function BookingsPage() {
+            const [bookings, setBookings] = useState([]);
+            const [filter, setFilter] = useState('all');
+            const [showCheckinModal, setShowCheckinModal] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState(null);
+            const [discounts, setDiscounts] = useState({});
+
+            useEffect(() => {
+                fetchBookings();
+            }, [filter]);
+
+            const fetchBookings = async () => {
+                setLoading(true);
+                try {
+                    let url = `${API_BASE}/bookings`;
+                    if (filter === 'active') url = `${API_BASE}/bookings/active`;
+
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    setBookings(data);
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Failed to fetch bookings' });
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const handleCheckout = async (roomNumber) => {
+                const discount = discounts[roomNumber] || 0;
+                
+                if (!confirm(`Checkout room ${roomNumber} with discount ₹${discount}?`)) return;
+
+                try {
+                    const response = await fetch(
+                        `${API_BASE}/bookings/checkout/${roomNumber}?discountAmount=${discount}`,
+                        { method: 'POST' }
+                    );
+
+                    if (response.ok) {
+                        setMessage({ type: 'success', text: 'Checkout successful' });
+                        fetchBookings();
+                        setDiscounts({...discounts, [roomNumber]: 0});
+                    } else {
+                        const errorText = await response.text();
+                        setMessage({ type: 'error', text: errorText || 'Checkout failed' });
+                    }
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Error during checkout' });
+                }
+            };
+
+            return (
+                <div className="container">
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '2.5rem' }}>Bookings Management</h2>
+                        <button className="btn btn-primary" onClick={() => setShowCheckinModal(true)}>
+                            + New Check-in
+                        </button>
+                    </div>
+
+                    {message && (
+                        <div className={`alert alert-${message.type}`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${filter === 'all' ? 'active' : ''}`}
+                            onClick={() => setFilter('all')}
+                        >
+                            All Bookings
+                        </div>
+                        <div 
+                            className={`tab ${filter === 'active' ? 'active' : ''}`}
+                            onClick={() => setFilter('active')}
+                        >
+                            Active Bookings
+                        </div>
+                    </div>
+
+                    <div className="table-container">
+                        {loading ? (
+                            <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                <div className="loading"></div>
+                            </div>
+                        ) : bookings.length === 0 ? (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">📋</div>
+                                <div className="empty-state-text">No bookings found</div>
+                            </div>
+                        ) : (
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Customer</th>
+                                        <th>Phone</th>
+                                        <th>Room</th>
+                                        <th>Check-in</th>
+                                        <th>Check-out</th>
+                                        <th>Days</th>
+                                        <th>Base</th>
+                                        <th>Tax</th>
+                                        <th>Final</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {bookings.map((booking, index) => (
+                                        <tr key={index} style={{ animationDelay: `${index * 0.05}s` }}>
+                                            <td><strong>{booking.customerName}</strong></td>
+                                            <td>{booking.phoneNumber}</td>
+                                            <td>{booking.roomNumber}</td>
+                                            <td>{new Date(booking.checkInTime).toLocaleDateString()}</td>
+                                            <td>{booking.checkOutTime ? new Date(booking.checkOutTime).toLocaleDateString() : '-'}</td>
+                                            <td>{booking.totalDays}</td>
+                                            <td>₹{booking.baseAmount?.toLocaleString()}</td>
+                                            <td>₹{booking.appliedTaxes?.toLocaleString()}</td>
+                                            <td><strong>₹{booking.finalAmount?.toLocaleString()}</strong></td>
+                                            <td>
+                                                <span className={`status-badge ${booking.active ? 'status-active' : 'status-available'}`}>
+                                                    {booking.active ? 'Active' : 'Completed'}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {booking.active && (
+                                                    <div className="checkout-group">
+                                                        <input 
+                                                            type="number"
+                                                            className="discount-input"
+                                                            placeholder="Discount"
+                                                            min="0"
+                                                            value={discounts[booking.roomNumber] || ''}
+                                                            onChange={(e) => setDiscounts({
+                                                                ...discounts,
+                                                                [booking.roomNumber]: parseFloat(e.target.value) || 0
+                                                            })}
+                                                        />
+                                                        <button 
+                                                            className="btn btn-success btn-sm"
+                                                            onClick={() => handleCheckout(booking.roomNumber)}
+                                                        >
+                                                            Checkout
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+
+                    {showCheckinModal && (
+                        <CheckinModal 
+                            onClose={() => setShowCheckinModal(false)}
+                            onSuccess={() => {
+                                setShowCheckinModal(false);
+                                fetchBookings();
+                                setMessage({ type: 'success', text: 'Check-in successful' });
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Checkin Modal
+        function CheckinModal({ onClose, onSuccess }) {
+            const [formData, setFormData] = useState({
+                customerName: '',
+                address: '',
+                phoneNumber: '',
+                aadharNumber: '',
+                numberOfPersons: '',
+                roomNumber: '',
+                perDayCost: ''
+            });
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`${API_BASE}/bookings/checkin`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...formData,
+                            numberOfPersons: parseInt(formData.numberOfPersons),
+                            perDayCost: parseFloat(formData.perDayCost)
+                        })
+                    });
+
+                    if (response.ok) {
+                        onSuccess();
+                    } else {
+                        const errorText = await response.text();
+                        setError(errorText || 'Failed to check-in');
+                    }
+                } catch (err) {
+                    setError('Error during check-in');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">New Check-in</h3>
+                            <button className="modal-close" onClick={onClose}>×</button>
+                        </div>
+
+                        {error && <div className="alert alert-error">{error}</div>}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Customer Name</label>
+                                    <input 
+                                        type="text"
+                                        className="form-input"
+                                        value={formData.customerName}
+                                        onChange={(e) => setFormData({...formData, customerName: e.target.value})}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Phone Number</label>
+                                    <input 
+                                        type="tel"
+                                        className="form-input"
+                                        value={formData.phoneNumber}
+                                        onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Address</label>
+                                <input 
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.address}
+                                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Aadhar Number</label>
+                                    <input 
+                                        type="text"
+                                        className="form-input"
+                                        value={formData.aadharNumber}
+                                        onChange={(e) => setFormData({...formData, aadharNumber: e.target.value})}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Number of Persons</label>
+                                    <input 
+                                        type="number"
+                                        className="form-input"
+                                        min="1"
+                                        value={formData.numberOfPersons}
+                                        onChange={(e) => setFormData({...formData, numberOfPersons: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Room Number</label>
+                                    <input 
+                                        type="text"
+                                        className="form-input"
+                                        value={formData.roomNumber}
+                                        onChange={(e) => setFormData({...formData, roomNumber: e.target.value})}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Per Day Cost (₹)</label>
+                                    <input 
+                                        type="number"
+                                        className="form-input"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.perDayCost}
+                                        onChange={(e) => setFormData({...formData, perDayCost: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? <span className="loading"></span> : 'Check-in'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Admin Page Component
+        function AdminPage() {
+            const [activeTab, setActiveTab] = useState('configs');
+            const [taxConfigs, setTaxConfigs] = useState([]);
+            const [taxSlabs, setTaxSlabs] = useState([]);
+            const [selectedConfigId, setSelectedConfigId] = useState(null);
+            const [showConfigModal, setShowConfigModal] = useState(false);
+            const [showSlabModal, setShowSlabModal] = useState(false);
+            const [loading, setLoading] = useState(false);
+            const [message, setMessage] = useState(null);
+
+            useEffect(() => {
+                fetchTaxConfigs();
+            }, []);
+
+            useEffect(() => {
+                if (selectedConfigId) {
+                    fetchTaxSlabs(selectedConfigId);
+                }
+            }, [selectedConfigId]);
+
+            const fetchTaxConfigs = async () => {
+                setLoading(true);
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/config`);
+                    const data = await response.json();
+                    setTaxConfigs(data);
+                    if (data.length > 0 && !selectedConfigId) {
+                        setSelectedConfigId(data[0].id);
+                    }
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Failed to fetch tax configs' });
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const fetchTaxSlabs = async (configId) => {
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/slab/${configId}`);
+                    const data = await response.json();
+                    setTaxSlabs(data);
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Failed to fetch tax slabs' });
+                }
+            };
+
+            const deleteTaxConfig = async (id) => {
+                if (!confirm('Delete this tax configuration?')) return;
+
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/config/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        setMessage({ type: 'success', text: 'Tax config deleted' });
+                        fetchTaxConfigs();
+                    } else {
+                        setMessage({ type: 'error', text: 'Failed to delete config' });
+                    }
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Error deleting config' });
+                }
+            };
+
+            const deleteTaxSlab = async (id) => {
+                if (!confirm('Delete this tax slab?')) return;
+
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/slab/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        setMessage({ type: 'success', text: 'Tax slab deleted' });
+                        if (selectedConfigId) fetchTaxSlabs(selectedConfigId);
+                    } else {
+                        setMessage({ type: 'error', text: 'Failed to delete slab' });
+                    }
+                } catch (error) {
+                    setMessage({ type: 'error', text: 'Error deleting slab' });
+                }
+            };
+
+            return (
+                <div className="container">
+                    <h2 style={{ fontSize: '2.5rem', marginBottom: '2rem' }}>Tax Administration</h2>
+
+                    {message && (
+                        <div className={`alert alert-${message.type}`}>
+                            {message.text}
+                        </div>
+                    )}
+
+                    <div className="tabs">
+                        <div 
+                            className={`tab ${activeTab === 'configs' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('configs')}
+                        >
+                            Tax Configurations
+                        </div>
+                        <div 
+                            className={`tab ${activeTab === 'slabs' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('slabs')}
+                        >
+                            Tax Slabs
+                        </div>
+                    </div>
+
+                    {activeTab === 'configs' && (
+                        <div>
+                            <div style={{ marginBottom: '1.5rem' }}>
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setShowConfigModal(true)}
+                                >
+                                    + Add Tax Config
+                                </button>
+                            </div>
+
+                            <div className="table-container">
+                                {loading ? (
+                                    <div style={{ padding: '3rem', textAlign: 'center' }}>
+                                        <div className="loading"></div>
+                                    </div>
+                                ) : taxConfigs.length === 0 ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-icon">⚙️</div>
+                                        <div className="empty-state-text">No tax configurations</div>
+                                    </div>
+                                ) : (
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Name</th>
+                                                <th>Year</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {taxConfigs.map((config, index) => (
+                                                <tr key={config.id} style={{ animationDelay: `${index * 0.05}s` }}>
+                                                    <td>{config.id}</td>
+                                                    <td><strong>{config.name}</strong></td>
+                                                    <td>{config.year}</td>
+                                                    <td>
+                                                        <span className={`status-badge ${config.active ? 'status-active' : 'status-available'}`}>
+                                                            {config.active ? 'Active' : 'Inactive'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div className="action-buttons">
+                                                            <button 
+                                                                className="btn btn-secondary btn-sm"
+                                                                onClick={() => {
+                                                                    setSelectedConfigId(config.id);
+                                                                    setActiveTab('slabs');
+                                                                }}
+                                                            >
+                                                                View Slabs
+                                                            </button>
+                                                            <button 
+                                                                className="btn btn-danger btn-sm"
+                                                                onClick={() => deleteTaxConfig(config.id)}
+                                                            >
+                                                                Delete
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'slabs' && (
+                        <div>
+                            <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <select 
+                                    className="form-select"
+                                    style={{ maxWidth: '300px' }}
+                                    value={selectedConfigId || ''}
+                                    onChange={(e) => setSelectedConfigId(parseInt(e.target.value))}
+                                >
+                                    <option value="">Select Tax Config</option>
+                                    {taxConfigs.map(config => (
+                                        <option key={config.id} value={config.id}>
+                                            {config.name} ({config.year})
+                                        </option>
+                                    ))}
+                                </select>
+                                <button 
+                                    className="btn btn-primary"
+                                    onClick={() => setShowSlabModal(true)}
+                                    disabled={!selectedConfigId}
+                                >
+                                    + Add Tax Slab
+                                </button>
+                            </div>
+
+                            <div className="table-container">
+                                {!selectedConfigId ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-icon">📊</div>
+                                        <div className="empty-state-text">Select a tax configuration to view slabs</div>
+                                    </div>
+                                ) : taxSlabs.length === 0 ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-icon">📊</div>
+                                        <div className="empty-state-text">No tax slabs for this configuration</div>
+                                    </div>
+                                ) : (
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Min Amount</th>
+                                                <th>Max Amount</th>
+                                                <th>Type</th>
+                                                <th>Value</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {taxSlabs.map((slab, index) => (
+                                                <tr key={slab.id} style={{ animationDelay: `${index * 0.05}s` }}>
+                                                    <td>{slab.id}</td>
+                                                    <td>₹{slab.minAmount?.toLocaleString()}</td>
+                                                    <td>₹{slab.maxAmount?.toLocaleString()}</td>
+                                                    <td>
+                                                        <span className="status-badge status-active">
+                                                            {slab.type}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <strong>
+                                                            {slab.type === 'PERCENTAGE' ? `${slab.value}%` : `₹${slab.value}`}
+                                                        </strong>
+                                                    </td>
+                                                    <td>
+                                                        <button 
+                                                            className="btn btn-danger btn-sm"
+                                                            onClick={() => deleteTaxSlab(slab.id)}
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {showConfigModal && (
+                        <AddTaxConfigModal 
+                            onClose={() => setShowConfigModal(false)}
+                            onSuccess={() => {
+                                setShowConfigModal(false);
+                                fetchTaxConfigs();
+                                setMessage({ type: 'success', text: 'Tax config added' });
+                            }}
+                        />
+                    )}
+
+                    {showSlabModal && (
+                        <AddTaxSlabModal 
+                            taxConfigs={taxConfigs}
+                            selectedConfigId={selectedConfigId}
+                            onClose={() => setShowSlabModal(false)}
+                            onSuccess={() => {
+                                setShowSlabModal(false);
+                                if (selectedConfigId) fetchTaxSlabs(selectedConfigId);
+                                setMessage({ type: 'success', text: 'Tax slab added' });
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Add Tax Config Modal
+        function AddTaxConfigModal({ onClose, onSuccess }) {
+            const [formData, setFormData] = useState({
+                name: '',
+                active: true,
+                year: new Date().getFullYear()
+            });
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/config`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    if (response.ok) {
+                        onSuccess();
+                    } else {
+                        setError('Failed to add tax config');
+                    }
+                } catch (err) {
+                    setError('Error adding tax config');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Add Tax Configuration</h3>
+                            <button className="modal-close" onClick={onClose}>×</button>
+                        </div>
+
+                        {error && <div className="alert alert-error">{error}</div>}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="form-label">Name</label>
+                                <input 
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Year</label>
+                                <input 
+                                    type="number"
+                                    className="form-input"
+                                    value={formData.year}
+                                    onChange={(e) => setFormData({...formData, year: parseInt(e.target.value)})}
+                                    required
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                                    <input 
+                                        type="checkbox"
+                                        className="form-checkbox"
+                                        checked={formData.active}
+                                        onChange={(e) => setFormData({...formData, active: e.target.checked})}
+                                    />
+                                    <span className="form-label" style={{ marginBottom: 0 }}>Active</span>
+                                </label>
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? <span className="loading"></span> : 'Add Config'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Add Tax Slab Modal
+        function AddTaxSlabModal({ taxConfigs, selectedConfigId, onClose, onSuccess }) {
+            const [formData, setFormData] = useState({
+                taxConfigId: selectedConfigId || '',
+                minAmount: '',
+                maxAmount: '',
+                type: 'PERCENTAGE',
+                value: ''
+            });
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`${API_BASE}/admin/taxes/slab`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            ...formData,
+                            taxConfigId: parseInt(formData.taxConfigId),
+                            minAmount: parseFloat(formData.minAmount),
+                            maxAmount: parseFloat(formData.maxAmount),
+                            value: parseFloat(formData.value)
+                        })
+                    });
+
+                    if (response.ok) {
+                        onSuccess();
+                    } else {
+                        setError('Failed to add tax slab');
+                    }
+                } catch (err) {
+                    setError('Error adding tax slab');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h3 className="modal-title">Add Tax Slab</h3>
+                            <button className="modal-close" onClick={onClose}>×</button>
+                        </div>
+
+                        {error && <div className="alert alert-error">{error}</div>}
+
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-group">
+                                <label className="form-label">Tax Configuration</label>
+                                <select 
+                                    className="form-select"
+                                    value={formData.taxConfigId}
+                                    onChange={(e) => setFormData({...formData, taxConfigId: e.target.value})}
+                                    required
+                                >
+                                    <option value="">Select Config</option>
+                                    {taxConfigs.filter(c => c.active).map(config => (
+                                        <option key={config.id} value={config.id}>
+                                            {config.name} ({config.year})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Min Amount (₹)</label>
+                                    <input 
+                                        type="number"
+                                        className="form-input"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.minAmount}
+                                        onChange={(e) => setFormData({...formData, minAmount: e.target.value})}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">Max Amount (₹)</label>
+                                    <input 
+                                        type="number"
+                                        className="form-input"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.maxAmount}
+                                        onChange={(e) => setFormData({...formData, maxAmount: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-row">
+                                <div className="form-group">
+                                    <label className="form-label">Type</label>
+                                    <select 
+                                        className="form-select"
+                                        value={formData.type}
+                                        onChange={(e) => setFormData({...formData, type: e.target.value})}
+                                        required
+                                    >
+                                        <option value="PERCENTAGE">Percentage</option>
+                                        <option value="FIXED">Fixed</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label className="form-label">
+                                        Value {formData.type === 'PERCENTAGE' ? '(%)' : '(₹)'}
+                                    </label>
+                                    <input 
+                                        type="number"
+                                        className="form-input"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.value}
+                                        onChange={(e) => setFormData({...formData, value: e.target.value})}
+                                        required
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="form-actions">
+                                <button type="button" className="btn btn-secondary" onClick={onClose}>
+                                    Cancel
+                                </button>
+                                <button type="submit" className="btn btn-primary" disabled={loading}>
+                                    {loading ? <span className="loading"></span> : 'Add Slab'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
